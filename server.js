@@ -5,6 +5,15 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+const mongoose = require('mongoose');
+
+//Connect to the database
+mongoose.connect('mongodb://localhost:27017/test', {
+  useUnifiedTopology: true,
+  useNewUrlParser: true
+});
+
+
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
   extended: false
@@ -12,6 +21,47 @@ app.use(bodyParser.urlencoded({
 
 app.listen(3000, () => console.log('Server listening on port 3000!'));
 
+
+
+const sizeSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  diam: String,
+  price: Number,
+  type: String,
+  problem: String,
+});
+
+const Size = mongoose.model('Size', sizeSchema);
+
+const toppingSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  price: Number,
+  type: String,
+  quantity: Number,
+});
+
+const Topping = mongoose.model('Topping', toppingSchema)
+
+const sauceSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  price: Number,
+  type: String,
+});
+
+
+const Sauce = mongoose.model('Sauce', sauceSchema)
+
+const crustSchema = new mongoose.Schema({
+  id: Number,
+  name: String,
+  price: Number,
+  type: String,
+});
+
+const Crust = mongoose.model('Crust', crustSchema)
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -89,20 +139,44 @@ app.post('/api/crusts', (req, res) => {         //ADDS DRINK
   res.send(crust);
 });
 
-app.get('/api/sizes', (req, res) => {    //GETS ALL SIZES
-  res.send(sizes);
+app.get('/api/sizes', async (req, res) => {   //GETS ALL SIZES
+  try {
+    let size = await Size.find();
+    res.send({size: size});
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-app.get('/api/toppings', (req, res) => {    //GETS ALL TOPPINGS
-  res.send(toppings);
+app.get('/api/toppings', async (req, res) => {    //GETS ALL TOPPINGS
+  try {
+    let topping = await Topping.find();
+    res.send({topping: topping});
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-app.get('/api/sauces', (req, res) => {    //GETS ALL SIDES
-  res.send(sauces);
+app.get('/api/sauces', async (req, res) => {    //GETS ALL SIDES
+  try {
+    let sauce = await Sauce.find();
+    res.send({sauce: sauce});
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
-app.get('/api/crusts', (req, res) => {    //GETS ALL DRINKS
-  res.send(crusts);
+app.get('/api/crusts', async (req, res) => {    //GETS ALL DRINKS
+  try {
+    let crust = await Crust.find();
+    res.send({crust: crust});
+  } catch (error) {
+    console.log(error);
+    res.sendStatus(500);
+  }
 });
 
 app.get('/api/total', (req, res) => {    //GETS ALL DRINKS
